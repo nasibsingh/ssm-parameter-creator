@@ -1,4 +1,4 @@
-README: AWS Project Manager Script
+AWS SSM Parameter Creator
 ==================================
 
 Overview
