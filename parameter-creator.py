@@ -4,37 +4,6 @@ import logging
 from datetime import datetime
 import json
 
-# Function to create a new project
-def create_new_project(base_path):
-    new_project_name = input("Enter the name of the new project: ").strip()
-    if not new_project_name:
-        print("Project name cannot be empty.")
-        return
-    
-    project_path = os.path.join(base_path, new_project_name)
-    if os.path.exists(project_path):
-        print(f"Project '{new_project_name}' already exists.")
-        return
-    
-    os.makedirs(project_path)
-    print(f"Project folder '{new_project_name}' created successfully.")
-
-    # Prompt for environments to add
-    print("Enter the environments to add (e.g., dev, stg, prod). Separate them by commas:")
-    environments = input().strip().split(',')
-
-    for env in environments:
-        env_name = env.strip()
-        if not env_name:
-            continue
-        env_path = os.path.join(project_path, env_name)
-        os.makedirs(env_path, exist_ok=True)
-        print(f"Environment folder '{env_name}' created for project '{new_project_name}'.")
-    
-    print(f"Project '{new_project_name}' setup completed.")
-    logging.info(f"New project '{new_project_name}' with environments {environments} created.")
-
-
 # Function to set up logging
 def setup_logging(profile_name, project_name, environment):
     log_dir = f"logs/{profile_name}/{project_name}/{environment}"
@@ -173,14 +142,6 @@ def create_or_update_parameter_store(project_name, environment, env_file_path, k
 
 # Main execution function
 def main():
-    environments_base_path = "environments"
-
-    # Prompt to add a new project
-    print("Do you want to add a new project? (yes/no):")
-    add_project = input().strip().lower()
-    if add_project == "yes":
-        create_new_project(environments_base_path)
-    
     aws_profiles = subprocess.run(["aws", "configure", "list-profiles"], capture_output=True, text=True).stdout.splitlines()
     if not aws_profiles:
         print("No AWS profiles found. Please configure at least one profile.")
@@ -189,6 +150,7 @@ def main():
     selected_profile = choose_aws_profile(aws_profiles)
     set_aws_profile(selected_profile)
 
+    environments_base_path = "environments"
     available_projects = list_folders(environments_base_path)
     selected_project = choose_option(available_projects, "Available Projects:")
 
